@@ -1,7 +1,7 @@
 from src.recommendation import MovieRecommender
 
 if __name__ == "__main__":
-    recommender = MovieRecommender("data/raw/movies.csv")
+    recommender = MovieRecommender("data/processed/clean_movies.csv")
 
     movie_name = input("Enter movie name: ")
     recommendations = recommender.recommend(movie_name)
