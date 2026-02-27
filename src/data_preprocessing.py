@@ -1,7 +1,14 @@
 import pandas as pd
 import ast
+import nltk
+from nltk.stem.porter import PorterStemmer
+
+ps = PorterStemmer()
 
 class DataPreprocessor:
+    
+    def _stem(self, text):
+        return " ".join([ps.stem(word) for word in text.split()])
 
     def __init__(self, movie_path, credits_path):
         self.movies = pd.read_csv(movie_path)
@@ -54,6 +61,7 @@ class DataPreprocessor:
         # Create tags column
         self.movies['tags'] = self.movies['overview'] + self.movies['genres'] + self.movies['keywords'] + self.movies['cast']
         self.movies['tags'] = self.movies['tags'].apply(lambda x: " ".join(x))
+        self.movies['tags'] = self.movies['tags'].apply(self._stem)
 
         final_df = self.movies[['title','tags']]
 
