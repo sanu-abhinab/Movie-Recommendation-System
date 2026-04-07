@@ -1,42 +1,70 @@
 import pandas as pd
+import pickle
+import os
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
 class MovieRecommender:
 
-    def __init__(self, data_path):
-        self.data = pd.read_csv(data_path)
+    def __init__(self, data_path=None):
+        self.data = None
         self.similarity_matrix = None
-        self._prepare_data()
 
-    def _prepare_data(self):
-        # Fill missing tags
+        # If models already exist → load them
+        if os.path.exists("models/similarity.pkl") and os.path.exists("models/movies.pkl"):
+            self._load_model()
+        else:
+            self._build_model(data_path)
+
+    def _build_model(self, data_path):
+        print("Building model...")
+
+        self.data = pd.read_csv(data_path)
         self.data['tags'] = self.data['tags'].fillna('')
 
-        # 🔥 Use TF-IDF instead of CountVectorizer
-        tfidf = TfidfVectorizer(
-            max_features=5000,
-            stop_words='english'
-        )
-
+        tfidf = TfidfVectorizer(max_features=5000, stop_words='english')
         tfidf_matrix = tfidf.fit_transform(self.data['tags'])
 
-        # Compute cosine similarity
         self.similarity_matrix = cosine_similarity(tfidf_matrix)
+
+        # Save model
+        self._save_model()
+
+    def _save_model(self):
+        os.makedirs("models", exist_ok=True)
+
+        with open("models/similarity.pkl", "wb") as f:
+            pickle.dump(self.similarity_matrix, f)
+
+        with open("models/movies.pkl", "wb") as f:
+            pickle.dump(self.data, f)
+
+        print("Model saved successfully!")
+
+    def _load_model(self):
+        print("Loading model...")
+
+        with open("models/similarity.pkl", "rb") as f:
+            self.similarity_matrix = pickle.load(f)
+
+        with open("models/movies.pkl", "rb") as f:
+            self.data = pickle.load(f)
+
+        print("Model loaded successfully!")
 
     def recommend(self, movie_title, top_n=5):
         if movie_title not in self.data['title'].values:
-            return ["Movie not found in database"]
+            return ["Movie not found"]
 
-        movie_index = self.data[self.data['title'] == movie_title].index[0]
-        similarity_scores = list(enumerate(self.similarity_matrix[movie_index]))
+        index = self.data[self.data['title'] == movie_title].index[0]
+        similarity_scores = list(enumerate(self.similarity_matrix[index]))
 
-        # Sort by similarity score
         similarity_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
 
-        recommended_movies = []
-        for i in similarity_scores[1:top_n + 1]:
-            recommended_movies.append(self.data.iloc[i[0]].title)
+        recommendations = []
+        for i in similarity_scores[1:top_n+1]:
+            recommendations.append(self.data.iloc[i[0]].title)
 
-        return recommended_movies
+        return recommendations
