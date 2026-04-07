@@ -1,4 +1,4 @@
-"""
+
 from src.recommendation import MovieRecommender
 
 if __name__ == "__main__":
@@ -31,3 +31,4 @@ if __name__ == "__main__":
     )
 
     print(clean_df.head())
+"""
