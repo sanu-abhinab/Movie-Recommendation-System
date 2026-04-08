@@ -8,8 +8,9 @@ from src.utils import get_mood_keywords
 
 
 class MovieRecommender:
-    
-    def recommend_by_mood(self, mood, top_n=5):
+
+
+    def recommend_by_mood(self, mood, base_movie=None, top_n=5):
         mood_keywords = get_mood_keywords()
 
         if mood not in mood_keywords:
@@ -17,15 +18,37 @@ class MovieRecommender:
 
         keywords = mood_keywords[mood]
 
-        # Filter movies containing mood keywords
-        filtered_movies = self.data[self.data['tags'].apply(
-            lambda x: any(word in x.lower() for word in keywords)
-        )]
+        # Step 1: Filter movies based on mood
+        filtered_indices = [
+            i for i, tag in enumerate(self.data['tags'])
+            if any(word in tag.lower() for word in keywords)
+        ]
 
-        if filtered_movies.empty:
+        if not filtered_indices:
             return ["No movies found for this mood"]
 
-        return filtered_movies['title'].head(top_n).tolist()
+        # Step 2: If user also gives a movie → apply similarity
+        if base_movie and base_movie in self.data['title'].values:
+            base_index = self.data[self.data['title'] == base_movie].index[0]
+
+            similarity_scores = [
+                (i, self.similarity_matrix[base_index][i])
+                for i in filtered_indices
+            ]
+
+            similarity_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
+
+            recommendations = [
+                self.data.iloc[i[0]].title for i in similarity_scores[:top_n]
+            ]
+
+        else:
+            # If no base movie → just return top filtered
+            recommendations = [
+                self.data.iloc[i].title for i in filtered_indices[:top_n]
+            ]
+
+        return recommendations
 
     def __init__(self, data_path=None):
         self.data = None
