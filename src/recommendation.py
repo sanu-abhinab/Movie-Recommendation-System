@@ -4,9 +4,28 @@ import os
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from src.utils import get_mood_keywords
 
 
 class MovieRecommender:
+    
+    def recommend_by_mood(self, mood, top_n=5):
+        mood_keywords = get_mood_keywords()
+
+        if mood not in mood_keywords:
+            return ["Invalid mood selected"]
+
+        keywords = mood_keywords[mood]
+
+        # Filter movies containing mood keywords
+        filtered_movies = self.data[self.data['tags'].apply(
+            lambda x: any(word in x.lower() for word in keywords)
+        )]
+
+        if filtered_movies.empty:
+            return ["No movies found for this mood"]
+
+        return filtered_movies['title'].head(top_n).tolist()
 
     def __init__(self, data_path=None):
         self.data = None
