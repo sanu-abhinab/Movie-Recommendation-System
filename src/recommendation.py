@@ -5,6 +5,8 @@ import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from src.utils import get_mood_keywords
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+
 
 
 class MovieRecommender:
@@ -110,3 +112,35 @@ class MovieRecommender:
             recommendations.append(self.data.iloc[i[0]].title)
 
         return recommendations
+    
+    def explain_recommendation(self, movie1, movie2, top_n=5):
+
+        tags1 = self.data[self.data['title'] == movie1]['tags'].values
+        tags2 = self.data[self.data['title'] == movie2]['tags'].values
+
+        if len(tags1) == 0 or len(tags2) == 0:
+            return "Explanation not available"
+
+        # Convert to sets
+        tags1 = set(tags1[0].split())
+        tags2 = set(tags2[0].split())
+
+        # Find common meaningful tags
+        common_tags = tags1.intersection(tags2)
+
+        # Remove stopwords + short meaningless words
+        filtered_tags = [
+            word for word in common_tags
+            if word.lower() not in ENGLISH_STOP_WORDS
+            and len(word) > 3
+        ]
+
+        if not filtered_tags:
+            return "Recommended based on overall movie similarity"
+
+        # Make readable
+        filtered_tags = filtered_tags[:top_n]
+
+        explanation = ", ".join(filtered_tags)
+
+        return f"Recommended because it shares: {explanation}"
