@@ -1,12 +1,19 @@
 import sys
 import os
 
+# --------------------------------------------------
+# ADD PROJECT ROOT TO PATH
+# --------------------------------------------------
 
 sys.path.append(
     os.path.abspath(
         os.path.join(os.path.dirname(__file__), '..')
     )
 )
+
+# --------------------------------------------------
+# IMPORTS
+# --------------------------------------------------
 
 import streamlit as st
 
@@ -21,12 +28,11 @@ from src.tmdb_api import (
     get_watch_link
 )
 
-# Load recommender
-recommender = MovieRecommender(
-    "data/processed/clean_movies.csv"
-)
+from src.utils import get_provider_links
 
-# ---------------- PAGE CONFIG ---------------- #
+# --------------------------------------------------
+# PAGE CONFIG
+# --------------------------------------------------
 
 st.set_page_config(
     page_title="Movie Recommendation System",
@@ -34,7 +40,19 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- CUSTOM CSS ---------------- #
+# --------------------------------------------------
+# LOAD DATA
+# --------------------------------------------------
+
+recommender = MovieRecommender(
+    "data/processed/clean_movies.csv"
+)
+
+provider_links = get_provider_links()
+
+# --------------------------------------------------
+# CUSTOM CSS
+# --------------------------------------------------
 
 st.markdown("""
 <style>
@@ -58,25 +76,6 @@ st.markdown("""
     margin-bottom: 40px;
 }
 
-.movie-card {
-    background-color: #1F1F1F;
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 20px;
-    transition: 0.3s;
-}
-
-.movie-card:hover {
-    border: 1px solid #E50914;
-    transform: scale(1.02);
-}
-
-.explanation {
-    color: #BBBBBB;
-    font-size: 14px;
-    margin-top: 10px;
-}
-
 .poster-card {
     background-color: #1F1F1F;
     border-radius: 15px;
@@ -87,13 +86,13 @@ st.markdown("""
 }
 
 .poster-card:hover {
-    transform: scale(1.05);
+    transform: scale(1.03);
     border: 2px solid #E50914;
 }
 
 .poster-title {
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     margin-top: 10px;
 }
@@ -101,12 +100,31 @@ st.markdown("""
 .poster-rating {
     color: #FFD700;
     font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.stButton > button {
+    width: 100%;
+    background-color: #E50914;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    height: 3em;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.stButton > button:hover {
+    background-color: #ff1e2d;
+    color: white;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- HEADER ---------------- #
+# --------------------------------------------------
+# HEADER
+# --------------------------------------------------
 
 st.markdown(
     '<div class="title">🎬 Movie Recommendation System</div>',
@@ -118,11 +136,14 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ---------------- INPUT SECTION ---------------- #
+# --------------------------------------------------
+# INPUT SECTION
+# --------------------------------------------------
 
 col1, col2 = st.columns(2)
 
 with col1:
+
     movie_list = recommender.data['title'].values
 
     selected_movie = st.selectbox(
@@ -131,6 +152,7 @@ with col1:
     )
 
 with col2:
+
     mood_options = [
         "happy",
         "sad",
@@ -145,22 +167,48 @@ with col2:
         mood_options
     )
 
-# ---------------- BUTTON ---------------- #
+# --------------------------------------------------
+# SESSION STATE
+# --------------------------------------------------
+
+if "recommendations" not in st.session_state:
+    st.session_state.recommendations = []
+
+if "selected_movie" not in st.session_state:
+    st.session_state.selected_movie = None
+
+# --------------------------------------------------
+# BUTTON
+# --------------------------------------------------
 
 if st.button("🚀 Recommend Movies"):
 
-    recommendations = recommender.recommend_by_mood(
-        mood=selected_mood,
-        base_movie=selected_movie
-    )
+    with st.spinner("Finding the best movies for you..."):
+
+        st.session_state.selected_movie = selected_movie
+
+        st.session_state.recommendations = (
+            recommender.recommend_by_mood(
+                mood=selected_mood,
+                base_movie=selected_movie
+            )
+        )
+
+# --------------------------------------------------
+# SHOW RECOMMENDATIONS
+# --------------------------------------------------
+
+if st.session_state.recommendations:
+
+    recommendations = st.session_state.recommendations
 
     st.markdown("---")
 
     st.subheader("✨ Recommended For You")
 
-    # Recommendation Cards
-    
-    for movie in recommendations:
+    cols = st.columns(3)
+
+    for idx, movie in enumerate(recommendations):
 
         movie_data = search_movie(movie)
 
@@ -170,7 +218,9 @@ if st.button("🚀 Recommend Movies"):
         movie_id = movie_data["id"]
 
         details = get_movie_details(movie_id)
+
         credits = get_movie_credits(movie_id)
+
         providers = get_watch_providers(movie_id)
 
         poster_url = get_poster_url(
@@ -178,27 +228,53 @@ if st.button("🚀 Recommend Movies"):
         )
 
         explanation = recommender.explain_recommendation(
-            selected_movie,
+            st.session_state.selected_movie,
             movie
         )
 
-        with st.expander(f"🎬 {movie}"):
+        with cols[idx % 3]:
 
-            col1, col2 = st.columns([1, 2])
+            st.markdown(
+                '<div class="poster-card">',
+                unsafe_allow_html=True
+            )
 
-            # ---------------- POSTER ---------------- #
+            # ----------------------------------------
+            # POSTER
+            # ----------------------------------------
 
-            with col1:
+            if poster_url:
 
-                if poster_url:
-                    st.image(poster_url)
+                st.image(
+                    poster_url,
+                    width="stretch"
+                )
 
-            # ---------------- DETAILS ---------------- #
+            # ----------------------------------------
+            # TITLE
+            # ----------------------------------------
 
-            with col2:
+            st.markdown(
+                f'<div class="poster-title">{movie}</div>',
+                unsafe_allow_html=True
+            )
 
-                st.subheader(movie)
+            # ----------------------------------------
+            # RATING
+            # ----------------------------------------
 
+            st.markdown(
+                f'<div class="poster-rating">⭐ {details.get("vote_average", "N/A")}</div>',
+                unsafe_allow_html=True
+            )
+
+            # ----------------------------------------
+            # EXPANDABLE DETAILS
+            # ----------------------------------------
+
+            with st.expander("📖 View Details"):
+
+                # Overview
                 st.write(
                     details.get(
                         "overview",
@@ -206,22 +282,28 @@ if st.button("🚀 Recommend Movies"):
                     )
                 )
 
-                st.markdown(
-                    f"⭐ Rating: {details.get('vote_average', 'N/A')}"
-                )
+                # ------------------------------------
+                # DIRECTOR
+                # ------------------------------------
 
-                # Director
                 director = "Unknown"
 
                 for crew_member in credits.get("crew", []):
 
                     if crew_member["job"] == "Director":
+
                         director = crew_member["name"]
+
                         break
 
-                st.markdown(f"🎥 Director: {director}")
+                st.markdown(
+                    f"🎥 **Director:** {director}"
+                )
 
-                # Cast
+                # ------------------------------------
+                # CAST
+                # ------------------------------------
+
                 cast = credits.get("cast", [])[:5]
 
                 cast_names = [
@@ -230,70 +312,133 @@ if st.button("🚀 Recommend Movies"):
                 ]
 
                 st.markdown(
-                    f"👨‍🎤 Cast: {', '.join(cast_names)}"
+                    f"👨‍🎤 **Cast:** {', '.join(cast_names)}"
                 )
 
-                # Explanation
+                # ------------------------------------
+                # EXPLANATION
+                # ------------------------------------
+
                 st.info(explanation)
 
-                # ---------------- WATCH PROVIDERS ---------------- #
+                # ------------------------------------
+                # WATCH OPTIONS
+                # ------------------------------------
 
                 st.markdown("### 🌍 Watch Options")
 
-                available_countries = providers.keys()
+                available_countries = list(providers.keys())
 
                 if available_countries:
 
-                    for country in available_countries:
+                    selected_country = st.selectbox(
+                        f"Select Country for {movie}",
+                        available_countries,
+                        key=f"{movie}_country"
+                    )
 
-                        country_data = providers[country]
+                    country_data = providers[selected_country]
 
-                        st.markdown(f"#### 🌎 {country}")
+                    # --------------------------------
+                    # STREAM
+                    # --------------------------------
 
-                        # STREAMING
-                        flatrate = country_data.get("flatrate", [])
+                    st.markdown("#### 📺 Stream")
 
-                        if flatrate:
+                    flatrate = country_data.get(
+                        "flatrate",
+                        []
+                    )
 
-                            stream_names = [
-                                p["provider_name"]
-                                for p in flatrate
-                            ]
+                    if flatrate:
 
-                            st.success(
-                                f"📺 Stream: {', '.join(stream_names)}"
+                        for p in flatrate:
+
+                            provider_name = p["provider_name"]
+
+                            provider_link = provider_links.get(
+                                provider_name,
+                                "#"
                             )
 
-                        # RENT
-                        rent = country_data.get("rent", [])
-
-                        if rent:
-
-                            rent_names = [
-                                p["provider_name"]
-                                for p in rent
-                            ]
-
-                            st.info(
-                                f"💰 Rent: {', '.join(rent_names)}"
+                            st.markdown(
+                                f"""
+                                - <a href="{provider_link}" target="_blank">
+                                {provider_name}
+                                </a>
+                                """,
+                                unsafe_allow_html=True
                             )
 
-                        # BUY
-                        buy = country_data.get("buy", [])
+                    else:
 
-                        if buy:
+                        st.info(
+                            "No streaming providers available."
+                        )
 
-                            buy_names = [
-                                p["provider_name"]
-                                for p in buy
-                            ]
+                    # --------------------------------
+                    # RENT
+                    # --------------------------------
 
-                            st.warning(
-                                f"🛒 Buy: {', '.join(buy_names)}"
-                            )
+                    st.markdown("#### 💰 Rent")
 
-                    # TMDB Watch Link
-                    watch_link = get_watch_link(movie_id)
+                    rent = country_data.get(
+                        "rent",
+                        []
+                    )
+
+                    if rent:
+
+                        rent_names = [
+                            p["provider_name"]
+                            for p in rent
+                        ]
+
+                        st.write(
+                            ", ".join(rent_names)
+                        )
+
+                    else:
+
+                        st.info(
+                            "No rent options available."
+                        )
+
+                    # --------------------------------
+                    # BUY
+                    # --------------------------------
+
+                    st.markdown("#### 🛒 Buy")
+
+                    buy = country_data.get(
+                        "buy",
+                        []
+                    )
+
+                    if buy:
+
+                        buy_names = [
+                            p["provider_name"]
+                            for p in buy
+                        ]
+
+                        st.write(
+                            ", ".join(buy_names)
+                        )
+
+                    else:
+
+                        st.info(
+                            "No buy options available."
+                        )
+
+                    # --------------------------------
+                    # WATCH LINK
+                    # --------------------------------
+
+                    watch_link = get_watch_link(
+                        movie_id
+                    )
 
                     st.markdown(
                         f"""
@@ -307,7 +452,7 @@ if st.button("🚀 Recommend Movies"):
                                 cursor:pointer;
                                 font-size:16px;
                             ">
-                                🎬 Watch / Stream Online
+                                🎬 View More Watch Options
                             </button>
                         </a>
                         """,
@@ -317,5 +462,10 @@ if st.button("🚀 Recommend Movies"):
                 else:
 
                     st.warning(
-                        "Watch provider information not available."
+                        "Provider information unavailable."
                     )
+
+            st.markdown(
+                '</div>',
+                unsafe_allow_html=True
+            )
