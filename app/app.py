@@ -25,7 +25,9 @@ from src.tmdb_api import (
     get_movie_credits,
     get_watch_providers,
     get_poster_url,
-    get_watch_link
+    get_watch_link,
+    get_popular_movies,
+    get_now_playing_movies
 )
 
 from src.utils import get_provider_links
@@ -135,6 +137,82 @@ st.markdown(
     '<div class="subtitle">Hybrid AI-Powered Mood & Movie Recommendation Engine</div>',
     unsafe_allow_html=True
 )
+
+# --------------------------------------------------
+# SIDEBAR
+# --------------------------------------------------
+
+st.sidebar.title("🎬 Discover Movies")
+
+show_popular = st.sidebar.checkbox(
+    "Show Popular Movies"
+)
+
+show_now_playing = st.sidebar.checkbox(
+    "Show Now Playing"
+)
+
+# --------------------------------------------------
+# POPULAR MOVIES
+# --------------------------------------------------
+
+if show_popular:
+
+    st.markdown("---")
+
+    st.subheader("🔥 Popular Movies")
+
+    popular_movies = get_popular_movies()
+
+    popular_cols = st.columns(5)
+
+    for idx, movie in enumerate(popular_movies[:10]):
+
+        with popular_cols[idx % 5]:
+
+            poster = get_poster_url(
+                movie.get("poster_path")
+            )
+
+            if poster:
+
+                st.image(
+                    poster,
+                    width="stretch"
+                )
+
+            st.caption(movie["title"])
+
+# --------------------------------------------------
+# NOW PLAYING
+# --------------------------------------------------
+
+if show_now_playing:
+
+    st.markdown("---")
+
+    st.subheader("🍿 Now Playing")
+
+    now_movies = get_now_playing_movies()
+
+    now_cols = st.columns(5)
+
+    for idx, movie in enumerate(now_movies[:10]):
+
+        with now_cols[idx % 5]:
+
+            poster = get_poster_url(
+                movie.get("poster_path")
+            )
+
+            if poster:
+
+                st.image(
+                    poster,
+                    width="stretch"
+                )
+
+            st.caption(movie["title"])
 
 # --------------------------------------------------
 # INPUT SECTION

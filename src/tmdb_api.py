@@ -177,3 +177,55 @@ def get_poster_url(poster_path):
 def get_watch_link(movie_id):
 
     return f"https://www.themoviedb.org/movie/{movie_id}/watch"
+
+# GET POPULAR MOVIES
+
+def get_popular_movies():
+
+    url = f"{BASE_URL}/movie/popular"
+
+    try:
+
+        response = session.get(
+            url,
+            headers=headers,
+            timeout=10
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        return data.get("results", [])
+
+    except requests.exceptions.RequestException as e:
+
+        print(e)
+
+        return []
+    
+# GET NOW PLAYING MOVIES
+
+def get_now_playing_movies():
+
+    url = f"{BASE_URL}/movie/now_playing"
+
+    try:
+
+        response = session.get(
+            url,
+            headers=headers,
+            timeout=10
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        return data.get("results", [])
+
+    except requests.exceptions.RequestException as e:
+
+        print(e)
+
+        return []
