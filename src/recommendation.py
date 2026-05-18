@@ -113,34 +113,59 @@ class MovieRecommender:
 
         return recommendations
     
-    def explain_recommendation(self, movie1, movie2, top_n=5):
+    def explain_recommendation(self, movie1, movie2):
 
-        tags1 = self.data[self.data['title'] == movie1]['tags'].values
-        tags2 = self.data[self.data['title'] == movie2]['tags'].values
+        movie1_data = self.data[self.data['title'] == movie1]
+        movie2_data = self.data[self.data['title'] == movie2]
 
-        if len(tags1) == 0 or len(tags2) == 0:
+        if movie1_data.empty or movie2_data.empty:
             return "Explanation not available"
 
-        # Convert to sets
-        tags1 = set(tags1[0].split())
-        tags2 = set(tags2[0].split())
+        explanations = []
 
-        # Find common meaningful tags
-        common_tags = tags1.intersection(tags2)
+        # Compare genres
+        genres1 = set(eval(movie1_data.iloc[0]['genres']))
+        genres2 = set(eval(movie2_data.iloc[0]['genres']))
 
-        # Remove stopwords + short meaningless words
-        filtered_tags = [
-            word for word in common_tags
-            if word.lower() not in ENGLISH_STOP_WORDS
-            and len(word) > 3
-        ]
+        shared_genres = genres1.intersection(genres2)
 
-        if not filtered_tags:
-            return "Recommended based on overall movie similarity"
+        if shared_genres:
+            explanations.append(
+                f"Shared Genre: {', '.join(list(shared_genres)[:2])}"
+            )
 
-        # Make readable
-        filtered_tags = filtered_tags[:top_n]
+        # Compare keywords
+        keywords1 = set(eval(movie1_data.iloc[0]['keywords']))
+        keywords2 = set(eval(movie2_data.iloc[0]['keywords']))
 
-        explanation = ", ".join(filtered_tags)
+        shared_keywords = keywords1.intersection(keywords2)
 
-        return f"Recommended because it shares: {explanation}"
+        if shared_keywords:
+            explanations.append(
+                f"Similar Theme: {', '.join(list(shared_keywords)[:2])}"
+            )
+
+        # Compare cast
+        cast1 = set(eval(movie1_data.iloc[0]['cast']))
+        cast2 = set(eval(movie2_data.iloc[0]['cast']))
+
+        shared_cast = cast1.intersection(cast2)
+
+        if shared_cast:
+            explanations.append(
+                f"Shared Cast: {', '.join(list(shared_cast)[:2])}"
+            )
+
+        # Compare director
+        director1 = movie1_data.iloc[0]['crew']
+        director2 = movie2_data.iloc[0]['crew']
+
+        if director1 == director2:
+            explanations.append(
+                f"Same Director: {director1}"
+            )
+
+        if not explanations:
+            return "Recommended due to high overall similarity"
+
+        return " | ".join(explanations)

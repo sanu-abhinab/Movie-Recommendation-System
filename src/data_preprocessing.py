@@ -63,7 +63,16 @@ class DataPreprocessor:
         self.movies['tags'] = self.movies['tags'].apply(lambda x: " ".join(x))
         self.movies['tags'] = self.movies['tags'].apply(self._stem)
 
-        final_df = self.movies[['title','tags']]
+        final_df = self.movies[
+            [
+                'title',
+                'tags',
+                'genres',
+                'keywords',
+                'cast',
+                'crew'
+            ]
+        ]
 
         # ✅ Save cleaned data
         if save_path:
