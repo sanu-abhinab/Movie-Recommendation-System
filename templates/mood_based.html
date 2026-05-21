@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Mood Selection
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="wizard-page">
+
+    <h1>
+        😊 What Mood Are You In?
+    </h1>
+
+    <form action="/watch-context"
+          method="POST">
+
+        <div class="option-grid">
+
+            <button name="mood"
+                    value="happy">
+
+                😄 Happy
+
+            </button>
+
+            <button name="mood"
+                    value="sad">
+
+                😢 Sad
+
+            </button>
+
+            <button name="mood"
+                    value="romantic">
+
+                ❤️ Romantic
+
+            </button>
+
+            <button name="mood"
+                    value="excited">
+
+                🔥 Excited
+
+            </button>
+
+            <button name="mood"
+                    value="scary">
+
+                👻 Scary
+
+            </button>
+
+            <button name="mood"
+                    value="motivational">
+
+                🚀 Motivational
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

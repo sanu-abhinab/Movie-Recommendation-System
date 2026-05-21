@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Movie Preference
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="wizard-page">
+
+    <h1>
+        🎬 Movie Preference
+    </h1>
+
+    <form action="/mood-recommendations"
+          method="POST">
+
+        <input type="hidden"
+               name="mood"
+               value="{{ mood }}">
+
+        <input type="hidden"
+               name="context"
+               value="{{ context }}">
+        
+        <input type="hidden"
+                name="genre"
+                value="{{ genre }}">
+
+        <div class="option-grid">
+
+            <button name="preference"
+                    value="new">
+
+                ✨ New Gen Movies
+
+            </button>
+
+            <button name="preference"
+                    value="any">
+
+                🎥 Doesn't Matter
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

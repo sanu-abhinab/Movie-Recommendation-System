@@ -1,0 +1,690 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+
+    font-family: Arial, sans-serif;
+    background-color: #0f0f0f;
+    color: white;
+}
+
+.hero {
+
+    height: 100vh;
+
+    background-image:
+        linear-gradient(
+            rgba(0,0,0,0.7),
+            rgba(0,0,0,0.9)
+        ),
+        url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba");
+
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+}
+
+.overlay {
+
+    max-width: 800px;
+}
+
+.hero h1 {
+
+    font-size: 4rem;
+    margin-bottom: 20px;
+
+    color: #E50914;
+}
+
+.hero p {
+
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+
+    color: #cccccc;
+}
+
+.buttons {
+
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.buttons button {
+
+    background-color: #E50914;
+
+    color: white;
+
+    border: none;
+
+    padding: 15px 30px;
+
+    border-radius: 10px;
+
+    font-size: 1rem;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.buttons button:hover {
+
+    background-color: #ff1f1f;
+
+    transform: scale(1.05);
+}
+
+/* -------------------------------- */
+/* MOVIE SECTIONS */
+/* -------------------------------- */
+
+.movie-section {
+
+    padding: 40px;
+}
+
+.movie-section h2 {
+
+    margin-bottom: 20px;
+
+    color: white;
+}
+
+/* -------------------------------- */
+/* HORIZONTAL ROW */
+/* -------------------------------- */
+
+.movie-row {
+
+    display: flex;
+
+    gap: 20px;
+
+    overflow-x: auto;
+
+    padding-bottom: 10px;
+
+    scroll-behavior: smooth;
+}
+
+.movie-row::-webkit-scrollbar {
+
+    height: 8px;
+}
+
+.movie-row::-webkit-scrollbar-thumb {
+
+    background: #E50914;
+
+    border-radius: 10px;
+}
+
+/* -------------------------------- */
+/* MOVIE CARD */
+/* -------------------------------- */
+
+.movie-card {
+
+    min-width: 220px;
+
+    background-color: #1a1a1a;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    transition: 0.3s;
+
+    cursor: pointer;
+}
+
+.movie-card:hover {
+
+    transform: scale(1.05);
+}
+
+.movie-card img {
+
+    width: 100%;
+
+    height: 320px;
+
+    object-fit: cover;
+}
+
+.movie-card h3 {
+
+    padding: 10px;
+
+    font-size: 1rem;
+}
+
+.movie-card p {
+
+    padding: 0 10px 10px;
+
+    color: #FFD700;
+}
+
+/* -------------------------------- */
+/* SEARCH PAGE */
+/* -------------------------------- */
+
+.search-page {
+
+    height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+}
+
+.search-page h1 {
+
+    margin-bottom: 30px;
+
+    color: #E50914;
+}
+
+.search-page input {
+
+    width: 400px;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    border: none;
+
+    margin-bottom: 20px;
+
+    font-size: 1rem;
+}
+
+.search-page button {
+
+    padding: 15px 30px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background-color: #E50914;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 1rem;
+}
+
+/* -------------------------------- */
+/* RECOMMENDATION GRID */
+/* -------------------------------- */
+
+.recommendation-page {
+
+    padding: 40px;
+}
+
+.recommendation-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 30px;
+
+    margin-top: 40px;
+}
+
+/* -------------------------------- */
+/* RECOMMENDATION PAGE */
+/* -------------------------------- */
+
+.recommendation-header {
+
+    text-align: center;
+
+    padding: 40px 20px;
+}
+
+.recommendation-header h1 {
+
+    color: #E50914;
+
+    font-size: 3rem;
+}
+
+.recommendation-header h2 {
+
+    color: white;
+
+    margin-top: 10px;
+
+    font-size: 2rem;
+}
+
+/* -------------------------------- */
+/* GRID */
+/* -------------------------------- */
+
+.recommendation-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(280px, 1fr));
+
+    gap: 30px;
+
+    padding: 40px;
+}
+
+/* -------------------------------- */
+/* MODERN CARD */
+/* -------------------------------- */
+
+.modern-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 15px;
+
+    cursor: pointer;
+
+    transition: 0.4s;
+}
+
+.modern-card img {
+
+    width: 100%;
+
+    height: 420px;
+
+    object-fit: cover;
+
+    transition: 0.4s;
+}
+
+/* -------------------------------- */
+/* HOVER EFFECT */
+/* -------------------------------- */
+
+.modern-card:hover img {
+
+    transform: scale(1.1);
+}
+
+.card-overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0,0,0,0.95),
+            rgba(0,0,0,0.3)
+        );
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-end;
+
+    padding: 20px;
+
+    opacity: 0;
+
+    transition: 0.4s;
+}
+
+.modern-card:hover .card-overlay {
+
+    opacity: 1;
+}
+
+/* -------------------------------- */
+/* CARD CONTENT */
+/* -------------------------------- */
+
+.card-overlay h3 {
+
+    font-size: 1.5rem;
+
+    margin-bottom: 10px;
+}
+
+.rating-badge {
+
+    width: fit-content;
+
+    background-color: #FFD700;
+
+    color: black;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+.overview {
+
+    font-size: 0.9rem;
+
+    color: #dddddd;
+
+    margin-bottom: 15px;
+}
+
+.explanation {
+
+    background-color: rgba(229,9,20,0.2);
+
+    border-left: 4px solid #E50914;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    margin-bottom: 15px;
+
+    font-size: 0.85rem;
+}
+
+.details-btn {
+
+    background-color: #E50914;
+
+    color: white;
+
+    border: none;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.details-btn:hover {
+
+    background-color: #ff2c2c;
+}
+
+/* -------------------------------- */
+/* MODAL */
+/* -------------------------------- */
+
+.modal {
+
+    display: none;
+
+    position: fixed;
+
+    z-index: 999;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-color:
+        rgba(0,0,0,0.9);
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 30px;
+}
+
+/* -------------------------------- */
+
+.modal-content {
+
+    background-color: #141414;
+
+    width: 90%;
+    max-width: 1000px;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    position: relative;
+
+    animation: popup 0.3s ease;
+}
+
+/* -------------------------------- */
+
+@keyframes popup {
+
+    from {
+
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* -------------------------------- */
+
+.close {
+
+    position: absolute;
+
+    top: 20px;
+    right: 25px;
+
+    font-size: 35px;
+
+    cursor: pointer;
+
+    color: white;
+
+    z-index: 10;
+}
+
+/* -------------------------------- */
+
+.modal-body {
+
+    display: flex;
+
+    gap: 30px;
+
+    padding: 30px;
+}
+
+/* -------------------------------- */
+
+.modal-body img {
+
+    width: 300px;
+
+    border-radius: 15px;
+}
+
+/* -------------------------------- */
+
+.modal-details {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    max-height: 80vh;
+}
+
+/* -------------------------------- */
+
+.modal-details h2 {
+
+    font-size: 2.5rem;
+
+    margin-bottom: 15px;
+}
+
+/* -------------------------------- */
+
+.modal-rating {
+
+    background-color: #FFD700;
+
+    color: black;
+
+    width: fit-content;
+
+    padding: 8px 15px;
+
+    border-radius: 20px;
+
+    font-weight: bold;
+
+    margin-bottom: 20px;
+}
+
+/* -------------------------------- */
+
+.modal-explanation {
+
+    margin-top: 25px;
+
+    background-color:
+        rgba(229,9,20,0.2);
+
+    border-left: 5px solid #E50914;
+
+    padding: 15px;
+
+    border-radius: 10px;
+}
+
+/* -------------------------------- */
+
+.watch-button {
+
+    margin-top: 25px;
+
+    background-color: #E50914;
+
+    color: white;
+
+    border: none;
+
+    padding: 15px 30px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 1rem;
+}
+
+/* -------------------------------- */
+/* WIZARD PAGES */
+/* -------------------------------- */
+
+.wizard-page {
+
+    height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+}
+
+.wizard-page h1 {
+
+    font-size: 3rem;
+
+    margin-bottom: 50px;
+
+    color: #E50914;
+}
+
+/* -------------------------------- */
+
+.option-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 250px);
+
+    gap: 25px;
+}
+
+/* -------------------------------- */
+
+.option-grid button {
+
+    background-color: #1c1c1c;
+
+    color: white;
+
+    border: 2px solid #E50914;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    font-size: 1.2rem;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+/* -------------------------------- */
+
+.option-grid button:hover {
+
+    background-color: #E50914;
+
+    transform: scale(1.05);
+}

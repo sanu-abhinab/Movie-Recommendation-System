@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        AI Movie Recommendation System
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <!-- HERO SECTION -->
+
+    <section class="hero">
+
+        <div class="overlay">
+
+            <h1>
+                🎬 AI Movie Discovery Platform
+            </h1>
+
+            <p>
+                Discover movies based on your mood,
+                taste and watching experience.
+            </p>
+
+            <div class="buttons">
+
+                <a href="/movie-based">
+                    <button>
+                        🎥 Recommend Based On A Movie
+                    </button>
+                </a>
+
+                <a href="/mood-based">
+                    <button>
+                        😊 Recommend Based On Mood
+                    </button>
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+    <!-- TRENDING / POPULAR -->
+
+    <section class="movie-section">
+
+        <h2>🔥 Popular Movies</h2>
+
+        <div class="movie-row">
+
+            {% for movie in popular_movies %}
+
+            <div class="movie-card">
+
+                <img src="
+                https://image.tmdb.org/t/p/w500{{ movie.poster_path }}
+                ">
+
+                <h3>
+                    {{ movie.title }}
+                </h3>
+
+                <p>
+                    ⭐ {{ movie.vote_average }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- NOW PLAYING -->
+
+    <section class="movie-section">
+
+        <h2>🍿 Now Playing</h2>
+
+        <div class="movie-row">
+
+            {% for movie in now_playing %}
+
+            <div class="movie-card">
+
+                <img src="
+                https://image.tmdb.org/t/p/w500{{ movie.poster_path }}
+                ">
+
+                <h3>
+                    {{ movie.title }}
+                </h3>
+
+                <p>
+                    ⭐ {{ movie.vote_average }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</body>
+
+</html>

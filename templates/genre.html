@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Genre Selection
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="wizard-page">
+
+    <h1>
+        🎭 Choose Your Preferred Genre
+    </h1>
+
+    <form action="/preference"
+          method="POST">
+
+        <input type="hidden"
+               name="mood"
+               value="{{ mood }}">
+
+        <input type="hidden"
+               name="context"
+               value="{{ context }}">
+
+        <div class="option-grid">
+
+            {% for genre in genres %}
+
+            <button name="genre"
+                    value="{{ genre }}">
+
+                {{ genre }}
+
+            </button>
+
+            {% endfor %}
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        AI Recommendations
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <div class="recommendation-header">
+
+        <h1>
+            Because You Watched
+        </h1>
+
+        <h2>
+            {{ selected_movie }}
+        </h2>
+
+    </div>
+
+
+    <!-- RECOMMENDATION GRID -->
+
+    <div class="recommendation-grid">
+
+        {% for movie in recommendations %}
+
+        <div class="modern-card"
+
+             data-title="{{ movie.title }}"
+             data-poster="{{ movie.poster }}"
+             data-rating="{{ movie.rating }}"
+             data-overview="{{ movie.overview }}"
+             data-runtime="{{ movie.runtime }}"
+             data-genres="{{ ', '.join(movie.genres) }}"
+             data-explanation="{{ movie.explanation }}"
+             data-provider-name="{{ movie.provider_name }}"
+             data-provider-link="{{ movie.provider_link }}"
+
+             onclick="openModal(this)">
+
+            <!-- POSTER -->
+
+            <img src="{{ movie.poster }}">
+
+            <!-- OVERLAY -->
+
+            <div class="card-overlay">
+
+                <h3>
+                    {{ movie.title }}
+                </h3>
+
+                <div class="rating-badge">
+
+                    ⭐ {{ movie.rating }}
+
+                </div>
+
+                <p class="overview">
+
+                    {{ movie.overview[:120] }}...
+
+                </p>
+
+                <div class="explanation">
+
+                    {{ movie.explanation }}
+
+                </div>
+
+                <button class="details-btn">
+
+                    View Details
+
+                </button>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- MOVIE MODAL -->
+
+    <div id="movieModal"
+         class="modal">
+
+        <div class="modal-content">
+
+            <span class="close"
+                  onclick="closeModal()">
+
+                &times;
+
+            </span>
+
+            <div class="modal-body">
+
+                <!-- POSTER -->
+
+                <img id="modalPoster">
+
+
+                <!-- DETAILS -->
+
+                <div class="modal-details">
+
+                    <h2 id="modalTitle"></h2>
+
+                    <div class="modal-rating"
+                         id="modalRating"></div>
+
+                    <p id="modalOverview"></p>
+
+                    <p>
+
+                        ⏱ Runtime:
+                        <span id="modalRuntime"></span>
+
+                    </p>
+
+                    <p>
+
+                        🎭 Genres:
+                        <span id="modalGenres"></span>
+
+                    </p>
+
+
+                    <!-- EXPLANATION -->
+
+                    <div class="modal-explanation">
+
+                        <h3>
+                            Why Recommended?
+                        </h3>
+
+                        <p id="modalExplanation"></p>
+
+                    </div>
+
+
+                    <!-- WATCH BUTTON -->
+
+                    <a id="watchBtn"
+                       target="_blank">
+
+                        <button class="watch-button">
+
+                            🎬 Watch Movie
+
+                        </button>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+    function openModal(card) {
+
+        // --------------------------------
+        // GET DATA
+        // --------------------------------
+
+        const title =
+            card.dataset.title;
+
+        const poster =
+            card.dataset.poster;
+
+        const rating =
+            card.dataset.rating;
+
+        const overview =
+            card.dataset.overview;
+
+        const runtime =
+            card.dataset.runtime;
+
+        const genres =
+            card.dataset.genres;
+
+        const explanation =
+            card.dataset.explanation;
+
+        const providerName =
+            card.dataset.providerName;
+
+        const providerLink =
+            card.dataset.providerLink;
+
+
+        // --------------------------------
+        // OPEN MODAL
+        // --------------------------------
+
+        document.getElementById(
+            "movieModal"
+        ).style.display = "flex";
+
+
+        // --------------------------------
+        // INSERT DATA
+        // --------------------------------
+
+        document.getElementById(
+            "modalTitle"
+        ).innerText = title;
+
+        document.getElementById(
+            "modalPoster"
+        ).src = poster;
+
+        document.getElementById(
+            "modalRating"
+        ).innerText =
+            "⭐ " + rating;
+
+        document.getElementById(
+            "modalOverview"
+        ).innerText = overview;
+
+        document.getElementById(
+            "modalRuntime"
+        ).innerText =
+            runtime + " mins";
+
+        document.getElementById(
+            "modalGenres"
+        ).innerText = genres;
+
+        document.getElementById(
+            "modalExplanation"
+        ).innerText =
+            explanation;
+
+
+        // --------------------------------
+        // WATCH BUTTON
+        // --------------------------------
+
+        const watchBtn =
+            document.getElementById(
+                "watchBtn"
+            );
+
+        if (providerLink &&
+            providerLink !== "None") {
+
+            watchBtn.href =
+                providerLink;
+
+            watchBtn.innerHTML =
+                `<button class="watch-button">
+                    🎬 Watch on ${providerName}
+                </button>`;
+
+        } else {
+
+            watchBtn.href =
+                "#";
+
+            watchBtn.innerHTML =
+                `<button class="watch-button">
+                    🎬 Provider Not Available
+                </button>`;
+        }
+    }
+
+
+    // --------------------------------
+    // CLOSE MODAL
+    // --------------------------------
+
+    function closeModal() {
+
+        document.getElementById(
+            "movieModal"
+        ).style.display = "none";
+    }
+
+
+    // --------------------------------
+    // CLOSE WHEN CLICK OUTSIDE
+    // --------------------------------
+
+    window.onclick = function(event) {
+
+        let modal =
+            document.getElementById(
+                "movieModal"
+            );
+
+        if (event.target == modal) {
+
+            modal.style.display = "none";
+        }
+    }
+
+    </script>
+
+</body>
+
+</html>

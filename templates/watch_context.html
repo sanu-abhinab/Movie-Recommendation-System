@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Watching Context
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="wizard-page">
+
+    <h1>
+        🍿 Who Are You Watching With?
+    </h1>
+
+    <form action="/genre"
+          method="POST">
+
+        <input type="hidden"
+               name="mood"
+               value="{{ mood }}">
+
+        <div class="option-grid">
+
+            <button name="context"
+                    value="alone">
+
+                🎧 Alone
+
+            </button>
+
+            <button name="context"
+                    value="date">
+
+                ❤️ Date Night
+
+            </button>
+
+            <button name="context"
+                    value="family">
+
+                👨‍👩‍👧 Family
+
+            </button>
+
+            <button name="context"
+                    value="friends">
+
+                🎉 Friends
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>
