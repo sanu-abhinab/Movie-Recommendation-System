@@ -19,6 +19,8 @@
 
 <body>
 
+    {% include 'navbar.html' %}
+
     <!-- HEADER -->
 
     <div class="recommendation-header">
@@ -42,17 +44,22 @@
 
         <div class="modern-card"
 
-             data-title="{{ movie.title }}"
-             data-poster="{{ movie.poster }}"
-             data-rating="{{ movie.rating }}"
-             data-overview="{{ movie.overview }}"
-             data-runtime="{{ movie.runtime }}"
-             data-genres="{{ ', '.join(movie.genres) }}"
-             data-explanation="{{ movie.explanation }}"
-             data-provider-name="{{ movie.provider_name }}"
-             data-provider-link="{{ movie.provider_link }}"
-
-             onclick="openModal(this)">
+        data-title="{{ movie.title }}"
+        data-poster="{{ movie.poster }}"
+        data-backdrop="{{ movie.backdrop }}"
+        data-rating="{{ movie.rating }}"
+        data-overview="{{ movie.overview }}"
+        data-runtime="{{ movie.runtime }}"
+        data-release="{{ movie.release_date }}"
+        data-genres="{{ ', '.join(movie.genres) }}"
+        data-director="{{ movie.director }}"
+        data-cast="{{ movie.cast }}"
+        data-company="{{ movie.production_company }}"
+        data-explanation="{{ movie.explanation }}"
+        data-provider-name="{{ movie.provider_name }}"
+        data-provider-link="{{ movie.provider_link }}"
+        data-trailer="{{ movie.trailer_link }}"
+        onclick="openModal(this)">
 
             <!-- POSTER -->
 
@@ -113,6 +120,21 @@
 
             </span>
 
+            <div
+                id="modalBackdrop"
+                class="modal-backdrop">
+
+                <div class="backdrop-overlay">
+
+                    <h1 id="backdropTitle"></h1>
+
+                    <div
+                        id="backdropRating"
+                        class="backdrop-rating">
+                    </div>
+                </div>
+            </div>
+
             <div class="modal-body">
 
                 <!-- POSTER -->
@@ -124,12 +146,12 @@
 
                 <div class="modal-details">
 
-                    <h2 id="modalTitle"></h2>
+                    <p>
 
-                    <div class="modal-rating"
-                         id="modalRating"></div>
+                        📅 Release Date:
+                        <span id="modalRelease"></span>
 
-                    <p id="modalOverview"></p>
+                    </p>
 
                     <p>
 
@@ -145,32 +167,91 @@
 
                     </p>
 
+                    <p>
 
-                    <!-- EXPLANATION -->
+                        🎬 Director:
+                        <span id="modalDirector"></span>
 
-                    <div class="modal-explanation">
+                    </p>
 
-                        <h3>
-                            Why Recommended?
-                        </h3>
+                    <p>
 
-                        <p id="modalExplanation"></p>
+                        👥 Cast:
+                        <span id="modalCast"></span>
+
+                    </p>
+
+                    <hr>
+
+                    <p>
+
+                        🏢 Production Company:
+                        <span id="modalCompany"></span>
+
+                    </p>
+
+                    <p>
+
+                        📺 Streaming Provider:
+                        <span id="modalProvider"></span>
+
+                    </p>
+
+                    <div class="action-buttons">
+
+                        <a id="watchBtn"
+                            target="_blank">
+
+                            <button class="watch-button">
+
+                                📺 Watch Movie
+
+                            </button>
+
+                        </a>
+
+                        <a
+                            id="trailerBtn"
+                            target="_blank">
+
+                            <button
+                                class="trailer-button">
+                            
+                                ▶ Watch Trailer
+                            </button>
+
+                        </a>
 
                     </div>
 
+                    <hr>
 
-                    <!-- WATCH BUTTON -->
+                    <div class="recommendation-box">
 
-                    <a id="watchBtn"
-                       target="_blank">
+                        <h3>
 
-                        <button class="watch-button">
+                            Why Recommended?
 
-                            🎬 Watch Movie
+                        </h3>
 
-                        </button>
+                        <p id="recommendationReason">
 
-                    </a>
+                        </p>
+
+                    </div>
+
+                    <hr>
+
+                    <h3 class="section-title">
+
+                        Overview
+
+                    </h3>
+
+                    <p id="modalOverview"
+                        class="modal-overview">
+
+                    </p>
 
                 </div>
 
@@ -185,6 +266,28 @@
 
     <script>
 
+    function showToast(message) {
+
+        const toast =
+            document.createElement("div");
+
+        toast.className =
+            "toast-message";
+
+        toast.innerText =
+            message;
+
+        document.body.appendChild(
+            toast
+        );
+
+        setTimeout(() => {
+
+            toast.remove();
+
+        }, 3000);
+    }
+
     function openModal(card) {
 
         // --------------------------------
@@ -196,6 +299,9 @@
 
         const poster =
             card.dataset.poster;
+
+        const backdrop =
+            card.dataset.backdrop;
 
         const rating =
             card.dataset.rating;
@@ -209,6 +315,18 @@
         const genres =
             card.dataset.genres;
 
+        const release =
+            card.dataset.release;
+
+        const director =
+            card.dataset.director;
+
+        const cast =
+            card.dataset.cast;
+
+        const company =
+            card.dataset.company;
+
         const explanation =
             card.dataset.explanation;
 
@@ -218,6 +336,16 @@
         const providerLink =
             card.dataset.providerLink;
 
+        const trailerLink =
+            card.dataset.trailer;
+
+        // --------------------------------
+        // RESET SCROLL
+        // --------------------------------
+
+        document.querySelector(
+            ".modal-body"
+        ).scrollTop = 0;
 
         // --------------------------------
         // OPEN MODAL
@@ -227,42 +355,90 @@
             "movieModal"
         ).style.display = "flex";
 
-
         // --------------------------------
-        // INSERT DATA
+        // BACKDROP
         // --------------------------------
 
         document.getElementById(
-            "modalTitle"
-        ).innerText = title;
+            "modalBackdrop"
+        ).style.backgroundImage =
+        `url(${backdrop})`;
+
+        document.getElementById(
+            "backdropTitle"
+        ).innerText =
+        title;
+
+        document.getElementById(
+            "backdropRating"
+        ).innerHTML =
+        `⭐ IMDb ${rating}/10`;
+
+        // --------------------------------
+        // DETAILS
+        // --------------------------------
 
         document.getElementById(
             "modalPoster"
-        ).src = poster;
+        ).src =
+        poster;
 
         document.getElementById(
-            "modalRating"
+            "modalRelease"
         ).innerText =
-            "⭐ " + rating;
-
-        document.getElementById(
-            "modalOverview"
-        ).innerText = overview;
+        release;
 
         document.getElementById(
             "modalRuntime"
         ).innerText =
-            runtime + " mins";
+        runtime + " mins";
 
         document.getElementById(
             "modalGenres"
-        ).innerText = genres;
+        ).innerText =
+        genres;
 
         document.getElementById(
-            "modalExplanation"
+            "modalDirector"
         ).innerText =
-            explanation;
+        director;
 
+        document.getElementById(
+            "modalCast"
+        ).innerText =
+        cast;
+
+        document.getElementById(
+            "modalCompany"
+        ).innerText =
+        company;
+
+        document.getElementById(
+            "modalProvider"
+        ).innerText =
+            (
+                providerName &&
+                providerName !== "None"
+            )
+        ? providerName
+
+        : "Not Available";
+
+        document.getElementById(
+            "modalOverview"
+        ).innerText =
+        overview;
+
+        const reason =
+            document.getElementById(
+                "recommendationReason"
+            );
+
+        if (reason) {
+
+            reason.innerText =
+            explanation;
+        }
 
         // --------------------------------
         // WATCH BUTTON
@@ -273,26 +449,61 @@
                 "watchBtn"
             );
 
-        if (providerLink &&
-            providerLink !== "None") {
+        if (
+            providerLink &&
+            providerLink !== "None"
+        ) {
 
             watchBtn.href =
                 providerLink;
 
-            watchBtn.innerHTML =
-                `<button class="watch-button">
-                    🎬 Watch on ${providerName}
-                </button>`;
+            watchBtn.onclick =
+                null;
 
-        } else {
+        }
+        else {
 
             watchBtn.href =
                 "#";
 
-            watchBtn.innerHTML =
-                `<button class="watch-button">
-                    🎬 Provider Not Available
-                </button>`;
+            watchBtn.onclick =
+                function(event) {
+                    event.preventDefault();
+
+                    showToast(
+                        "Sorry, no streaming provider is currently available for this movie."
+                    );
+                };
+        }
+
+        const trailerBtn =
+            document.getElementById(
+                "trailerBtn"
+            );
+
+        if (
+            trailerLink &&
+            trailerLink !== "None"
+        ) {
+
+            trailerBtn.href =
+                trailerLink;
+
+        }
+        else {
+
+            trailerBtn.href =
+                "#";
+
+            trailerBtn.onclick =
+            function(event) {
+
+                event.preventDefault();
+
+                showToast(
+                    "Trailer not available."
+                );
+            };
         }
     }
 

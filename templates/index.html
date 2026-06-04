@@ -19,9 +19,15 @@
 
 <body>
 
+    <!-- NAVBAR -->
+
+    {% include 'navbar.html' %}
+
     <!-- HERO SECTION -->
 
     <section class="hero">
+
+        
 
         <div class="overlay">
 
@@ -53,7 +59,7 @@
         </div>
 
     </section>
-    <!-- TRENDING / POPULAR -->
+    <!-- POPULAR -->
 
     <section class="movie-section">
 
@@ -63,19 +69,69 @@
 
             {% for movie in popular_movies %}
 
-            <div class="movie-card">
+            <div 
+                class="movie-card"
+                onclick="openMovieModal({{ movie.id }})">
 
                 <img src="
                 https://image.tmdb.org/t/p/w500{{ movie.poster_path }}
                 ">
 
-                <h3>
-                    {{ movie.title }}
-                </h3>
+                <div class="movie-overlay">
+                
+                    <h3>
+                        {{ movie.title }}
+                    </h3>
 
-                <p>
-                    ⭐ {{ movie.vote_average }}
-                </p>
+                    <p>
+                        ⭐ {{ movie.vote_average }}
+                    </p>
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    <!-- TRENDING MOVIES -->
+
+    <section class="movie-section">
+
+        <h2>
+
+            🔥 Trending Movies
+
+        </h2>
+
+        <div class="movie-row">
+
+            {% for movie in trending_movies %}
+
+            <div 
+                class="movie-card"
+                onclick="openMovieModal({{ movie.id }})">
+
+                <img src="
+                https://image.tmdb.org/t/p/w500{{ movie.poster_path }}
+                ">
+
+                <div class="movie-overlay">
+                
+                    <h3>
+
+                        {{ movie.title }}
+
+                    </h3>
+
+                    <p>
+
+                        ⭐ {{ movie.vote_average }}
+
+                    </p>
+                </div>
 
             </div>
 
@@ -96,19 +152,24 @@
 
             {% for movie in now_playing %}
 
-            <div class="movie-card">
+            <div 
+                class="movie-card"
+                onclick="openMovieModal({{ movie.id }})">
 
                 <img src="
                 https://image.tmdb.org/t/p/w500{{ movie.poster_path }}
                 ">
 
-                <h3>
-                    {{ movie.title }}
-                </h3>
+                <div class="movie-overlay">
+                
+                    <h3>
+                        {{ movie.title }}
+                    </h3>
 
-                <p>
-                    ⭐ {{ movie.vote_average }}
-                </p>
+                    <p>
+                        ⭐ {{ movie.vote_average }}
+                    </p>
+                </div>
 
             </div>
 
@@ -117,6 +178,252 @@
         </div>
 
     </section>
+
+    <!-- UNIVERSAL MOVIE MODAL -->
+
+        <div id="movieModal" class="modal">
+
+            <div class="modal-content">
+
+                <span
+                    class="close"
+                    onclick="closeModal()">
+
+                    &times;
+
+                </span>
+
+                <div
+                    id="modalBackdrop"
+                    class="modal-backdrop">
+
+                    <div class="backdrop-overlay">
+                        <h1 id="backdropTitle"></h1>
+
+                        <div
+                            id="backdropRating"
+                            class="backdrop-rating">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+
+                    <img id="modalPoster">
+
+                    <div class="modal-details">
+
+                        
+
+                        <p>
+
+                            📅 Release Date:
+                            <span id="modalRelease"></span>
+
+                        </p>
+
+                        <p>
+
+                            ⏱ Runtime:
+                            <span id="modalRuntime"></span>
+
+                        </p>
+
+                        <p>
+
+                            🎭 Genres:
+                            <span id="modalGenres"></span>
+
+                        </p>
+
+                        <p>
+
+                            🎬 Director:
+                            <span id="modalDirector"></span>
+
+                        </p>
+
+                        <p>
+
+                            👥 Cast:
+                            <span id="modalCast"></span>
+
+                        </p>
+
+                        <hr>
+
+                        <p>
+                            🏢 Production Company:
+
+                            <span id="modalCompany"></span>
+
+                        </p>
+
+                        <p>
+
+                            📺 Streaming Provider:
+                            <span id="modalProvider"></span>
+
+                        </p>
+
+                        <a
+                            id="watchBtn"
+                            target="_blank">
+
+                            <button
+                                class="watch-button">
+
+                                Watch Now
+                            </button>
+                        </a>
+
+                        <hr>
+
+                        <h3 class="section-title">
+                            Overview
+                        </h3>
+
+                        <p 
+                            id="modalOverview"
+                            class="modal-overview">
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    <script>
+
+        async function openMovieModal(
+            movieId
+        ) {
+
+            const response =
+                await fetch(
+                    `/movie-details/${movieId}`
+                );
+
+            const movie =
+                await response.json();
+
+            document.getElementById(
+                "modalPoster"
+            ).src =
+                movie.poster;
+
+            document.getElementById(
+                "modalBackdrop"
+            ).style.backgroundImage =
+                `url(${movie.backdrop})`;
+
+            document.getElementById(
+                "backdropTitle"
+            ).innerText =
+                movie.title;
+
+            document.getElementById(
+                "backdropRating"
+            ).innerHTML =
+                `⭐ IMDb ${movie.imdb_rating}/10`;
+
+            
+
+            document.getElementById(
+                "modalRelease"
+            ).innerText =
+                movie.release_date;
+
+            document.getElementById(
+                "modalRuntime"
+            ).innerText =
+                movie.runtime + " mins";
+
+            document.getElementById(
+                "modalGenres"
+            ).innerText =
+                movie.genres.join(", ");
+
+            document.getElementById(
+                "modalDirector"
+            ).innerText =
+                movie.director;
+
+            document.getElementById(
+                "modalCast"
+            ).innerText =
+                movie.cast.join(", ");
+
+            document.getElementById(
+                "modalCompany"
+            ).innerText =
+                movie.production_company;
+
+            document.getElementById(
+                "modalProvider"
+            ).innerText =
+                movie.provider || "Not Available";
+
+            document.getElementById(
+                "modalOverview"
+            ).innerText =
+                movie.overview;
+
+            document.getElementById(
+                "movieModal"
+            ).style.display =
+                "flex";
+
+            const watchBtn =
+                document.getElementById(
+                    "watchBtn"
+                );
+
+            if (
+                movie.provider_link
+            ) {
+                watchBtn.href =
+                movie.provider_link;
+
+                watchBtn.style.display =
+                "inline-block";
+            }
+            else{
+
+                watchBtn.style.display =
+                "none";
+            }
+        }
+
+        function closeModal() {
+
+            document.getElementById(
+                "movieModal"
+            ).style.display =
+                "none";
+        }
+
+        window.onclick =
+        function(event) {
+
+            let modal =
+                document.getElementById(
+                    "movieModal"
+                );
+
+            if (
+                event.target == modal
+            ) {
+
+                modal.style.display =
+                    "none";
+            }
+        }
+
+    </script>
 
 </body>
 

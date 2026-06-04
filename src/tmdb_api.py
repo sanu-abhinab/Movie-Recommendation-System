@@ -229,3 +229,79 @@ def get_now_playing_movies():
         print(e)
 
         return []
+    
+# GET TRENDING MOVIES
+
+def get_trending_movies():
+
+    url = f"{BASE_URL}/trending/movie/week"
+
+    try:
+
+        response = session.get(
+            url,
+            headers=headers,
+            timeout=10
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        return data.get(
+            "results",
+            []
+        )
+
+    except Exception as e:
+
+        print(
+            "Trending Error:",
+            e
+        )
+
+        return []
+    
+# GET TRAILER VIDEOS
+
+def get_movie_trailer(movie_id):
+
+    url = f"{BASE_URL}/movie/{movie_id}/videos"
+
+    try:
+
+        response = session.get(
+            url,
+            headers=headers,
+            timeout=10
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        for video in data.get(
+            "results",
+            []
+        ):
+
+            if (
+
+                video.get("site") == "YouTube"
+
+                and
+
+                video.get("type") == "Trailer"
+
+            ):
+
+                return (
+                    "https://www.youtube.com/watch?v="
+                    + video["key"]
+                )
+
+        return None
+
+    except requests.exceptions.RequestException:
+
+        return None

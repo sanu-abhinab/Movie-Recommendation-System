@@ -1,19 +1,32 @@
-from flask import Flask, render_template, request
+from flask import (
+    Flask,
+    render_template,
+    request,
+    session,
+    redirect,
+    url_for,
+    jsonify
+)
 
 from datetime import datetime
 
 from src.tmdb_api import (
     get_popular_movies,
     get_now_playing_movies,
+    get_trending_movies,
     get_poster_url,
     search_movie,
     get_movie_details,
-    get_watch_providers
+    get_movie_credits,
+    get_watch_providers,
+    get_movie_trailer
 )
 
 from src.recommendation import MovieRecommender
 
 app = Flask(__name__)
+
+app.secret_key = "movie_discovery_ai_2026"
 
 # --------------------------------------------------
 # LOAD RECOMMENDER
@@ -68,6 +81,39 @@ provider_links = {
     "https://tv.apple.com"
 }
 
+
+
+
+@app.route("/set-engine", methods=["POST"])
+def set_engine():
+
+    engine = request.form.get(
+        "engine",
+        "content"
+    )
+
+    session["engine"] = engine
+
+    return redirect(request.referrer or "/")
+
+
+
+@app.context_processor
+def inject_engine():
+
+    return {
+
+        "selected_engine":
+
+        session.get(
+            "engine",
+            "content"
+        )
+    }
+
+
+
+
 # --------------------------------------------------
 # HOME PAGE
 # --------------------------------------------------
@@ -78,14 +124,19 @@ def home():
     popular_movies = get_popular_movies()
 
     now_playing = get_now_playing_movies()
+    
+    trending_movies = get_trending_movies()
 
     return render_template(
 
         "index.html",
+        
+        trending_movies=trending_movies,
 
         popular_movies=popular_movies,
 
         now_playing=now_playing
+        
     )
 
 # --------------------------------------------------
@@ -104,6 +155,7 @@ def movie_based():
         movie_list=movie_list
     )
 
+
 # --------------------------------------------------
 # MOVIE RECOMMENDATIONS
 # --------------------------------------------------
@@ -115,7 +167,9 @@ def recommend():
 
     recommendations = recommender.recommend(
         movie_name
-    )
+    )[:8]
+    
+    recommendations = recommender.recommend(movie_name)
 
     movie_data = []
 
@@ -139,6 +193,10 @@ def recommend():
         details = get_movie_details(
             movie_id
         )
+        
+        trailer_link = get_movie_trailer(
+            movie_id
+        )
 
         poster = get_poster_url(
             details.get("poster_path")
@@ -148,6 +206,32 @@ def recommend():
             movie_name,
             movie
         )
+        
+        credits = get_movie_credits(movie_id)
+        director = "Unknown"
+        
+        for crew in credits.get("crew", []):
+            if crew.get("job") == "Director":
+                director = crew["name"]
+                break
+            
+        cast = ", ".join([
+            actor["name"]
+            for actor in credits.get(
+                "cast",
+                []
+            )[:5]
+        ])
+        
+        production_company = "Unknown"
+        
+        if details.get(
+            "production_companies"
+        ):
+            
+            production_company = details[
+                "production_companies"
+            ][0]["name"]
 
         # ------------------------------------------
         # PROVIDERS
@@ -188,12 +272,20 @@ def recommend():
         # ------------------------------------------
         # APPEND MOVIE
         # ------------------------------------------
+        
+        
 
         movie_data.append({
 
             "title": movie,
 
             "poster": poster,
+            
+            "backdrop":
+            f"https://image.tmdb.org/t/p/original{details.get('backdrop_path')}"
+            if details.get("backdrop_path")
+            else None,
+            
 
             "rating": details.get(
                 "vote_average",
@@ -228,7 +320,26 @@ def recommend():
             provider_name,
 
             "provider_link":
-            provider_link
+            provider_link,
+            
+            "release_date":
+            details.get(
+                "release_date",
+                "N/A"
+            ),
+            
+            "director":
+            director,
+            
+            "cast":
+            cast,
+            
+            "trailer_link":
+            trailer_link,
+            
+            "production_company":
+            production_company
+            
         })
 
     return render_template(
@@ -246,7 +357,7 @@ def recommend():
 
 @app.route("/mood-based")
 def mood_based():
-
+    
     return render_template(
         "mood_based.html"
     )
@@ -451,6 +562,32 @@ def mood_recommendations():
             except:
 
                 release_year = None
+                
+        credits = get_movie_credits(movie_id)
+        director = "Unknown"
+        
+        for crew in credits.get("crew", []):
+            if crew.get("job") == "Director":
+                director = crew["name"]
+                break
+            
+        cast = ", ".join([
+            actor["name"]
+            for actor in credits.get(
+                "cast",
+                []
+            )[:5]
+        ])
+        
+        production_company = "Unknown"
+        
+        if details.get(
+            "production_companies"
+        ):
+            
+            production_company = details[
+                "production_companies"
+            ][0]["name"]
 
         # ------------------------------------------
         # PROVIDERS
@@ -487,6 +624,10 @@ def mood_recommendations():
 
             if provider_name:
                 break
+            
+        trailer_link = get_movie_trailer(
+            movie_id
+        )
 
         # ------------------------------------------
         # FALLBACK MOVIES
@@ -524,7 +665,25 @@ def mood_recommendations():
             provider_name,
 
             "provider_link":
-            provider_link
+            provider_link,
+            
+            "release_date":
+            details.get(
+                "release_date",
+                "N/A"
+            ),
+            
+            "director":
+            director,
+            
+            "cast":
+            cast,
+            
+            "production_company":
+            production_company,
+            
+            "trailer_link":
+            trailer_link,
         })
 
         # ------------------------------------------
@@ -548,6 +707,11 @@ def mood_recommendations():
             "title": movie,
 
             "poster": poster,
+            
+            "backdrop":
+            f"https://image.tmdb.org/t/p/original{details.get('backdrop_path')}"
+            if details.get('backdrop_path')
+            else None,
 
             "rating": details.get(
                 "vote_average",
@@ -577,7 +741,25 @@ def mood_recommendations():
             provider_name,
 
             "provider_link":
-            provider_link
+            provider_link,
+            
+            "release_date":
+            details.get(
+                "release_date",
+                "N/A"
+            ),
+            
+            "director":
+            director,
+            
+            "cast":
+            cast,
+            
+            "trailer_link":
+            trailer_link,
+            
+            "production_company":
+            production_company
         })
 
     # ------------------------------------------
@@ -595,6 +777,9 @@ def mood_recommendations():
             "Showing closest recommendations instead."
         )
 
+    # Limit final results
+    movie_data = movie_data[:8]
+    
     return render_template(
 
         "recommendations.html",
@@ -606,6 +791,203 @@ def mood_recommendations():
 
         fallback_message=fallback_message
     )
+
+
+# --------------------------------------------------
+# MOVIE DETAILS API
+# --------------------------------------------------
+
+@app.route("/movie-details/<int:movie_id>")
+def movie_details(movie_id):
+
+    try:
+
+        details = get_movie_details(
+            movie_id
+        )
+
+        credits = get_movie_credits(
+            movie_id
+        )
+
+        # ------------------------------------------
+        # CAST
+        # ------------------------------------------
+
+        cast = []
+
+        for actor in credits.get(
+            "cast",
+            []
+        )[:5]:
+
+            cast.append(
+                actor["name"]
+            )
+
+        # ------------------------------------------
+        # DIRECTOR
+        # ------------------------------------------
+
+        director = "Unknown"
+
+        for crew in credits.get(
+            "crew",
+            []
+        ):
+
+            if crew.get(
+                "job"
+            ) == "Director":
+
+                director = crew["name"]
+
+                break
+
+        # ------------------------------------------
+        # PRODUCTION COMPANY
+        # ------------------------------------------
+
+        production_company = "Unknown"
+
+        companies = details.get(
+            "production_companies",
+            []
+        )
+
+        if companies:
+
+            production_company = companies[
+                0
+            ]["name"]
+
+        # ------------------------------------------
+        # STREAMING PROVIDERS
+        # ------------------------------------------
+
+        providers = get_watch_providers(
+            movie_id
+        )
+
+        provider_name = None
+
+        provider_link = None
+
+        for country in providers.values():
+
+            flatrate = country.get(
+                "flatrate",
+                []
+            )
+
+            for p in flatrate:
+
+                name = p["provider_name"]
+
+                if name in priority_providers:
+
+                    provider_name = name
+
+                    provider_link = provider_links.get(
+                        name
+                    )
+
+                    break
+
+            if provider_name:
+                break
+
+        # ------------------------------------------
+        # IMDb STYLE RATING
+        # ------------------------------------------
+
+        imdb_rating = round(
+
+            details.get(
+                "vote_average",
+                0
+            ),
+
+            1
+        )
+
+        # ------------------------------------------
+        # RETURN JSON
+        # ------------------------------------------
+
+        return jsonify({
+
+            "title":
+            details.get("title"),
+
+            "overview":
+            details.get("overview"),
+
+            "poster":
+            get_poster_url(
+                details.get(
+                    "poster_path"
+                )
+            ),
+            
+            "backdrop":
+            f"https://image.tmdb.org/t/p/original{details.get('backdrop_path')}"
+            if details.get('backdrop_path')
+            else None,
+
+            "rating":
+            details.get(
+                "vote_average"
+            ),
+
+            "imdb_rating":
+            imdb_rating,
+
+            "release_date":
+            details.get(
+                "release_date"
+            ),
+
+            "runtime":
+            details.get(
+                "runtime"
+            ),
+
+            "genres": [
+
+                genre["name"]
+
+                for genre in details.get(
+                    "genres",
+                    []
+                )
+            ],
+
+            "director":
+            director,
+
+            "cast":
+            cast,
+
+            "production_company":
+            production_company,
+
+            "provider":
+            provider_name,
+
+            "provider_link":
+            provider_link
+            
+        })
+
+    except Exception as e:
+
+        return jsonify({
+
+            "error":
+            str(e)
+
+        }), 500
 
 # --------------------------------------------------
 # RUN APP

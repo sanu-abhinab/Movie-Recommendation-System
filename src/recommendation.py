@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 class MovieRecommender:
 
 
-    def recommend_by_mood(self, mood, base_movie=None, top_n=5):
+    def recommend_by_mood(self, mood, base_movie=None, top_n=8):
         mood_keywords = get_mood_keywords()
 
         if mood not in mood_keywords:
@@ -98,7 +98,7 @@ class MovieRecommender:
 
         print("Model loaded successfully!")
 
-    def recommend(self, movie_title, top_n=5):
+    def recommend(self, movie_title, top_n=8):
         if movie_title not in self.data['title'].values:
             return ["Movie not found"]
 
