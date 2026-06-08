@@ -658,8 +658,7 @@ def mood_recommendations():
 
             "explanation":
 
-            f"Recommended for your "
-            f"{mood} mood.",
+            f"{mood} Mood | Similar Preference",
 
             "provider_name":
             provider_name,
@@ -699,6 +698,25 @@ def mood_recommendations():
                     continue
 
         # ------------------------------------------
+        # EXPLANATION BADGES
+        # ------------------------------------------
+
+        if genre == "Doesn't Matter":
+
+            explanation = (
+                f"{mood} Mood | "
+                f"Watching with {context}"
+            )
+
+        else:
+
+            explanation = (
+                f"{genre} | "
+                f"{mood} Mood | "
+                f"Watching with {context}"
+            )
+
+        # ------------------------------------------
         # APPEND FILTERED MOVIE
         # ------------------------------------------
 
@@ -730,12 +748,7 @@ def mood_recommendations():
 
             "genres": movie_genres,
 
-            "explanation":
-
-            f"Recommended because it matches your "
-            f"{genre} preference and "
-            f"{mood} mood while watching with "
-            f"{context}.",
+            "explanation": explanation,
 
             "provider_name":
             provider_name,

@@ -1172,3 +1172,233 @@ body {
 .genre-body{
     padding-top: 110px;
 }
+
+#loading-screen {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background: #141414;
+
+    display: none;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-direction: column;
+
+    z-index: 999999;
+
+    opacity: 1;
+
+    transition: opacity .6s ease;
+}
+
+.movie-loader {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+}
+
+.movie-loader img {
+
+    width: 120px;
+
+    height: 120px;
+
+    object-fit: contain;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+
+        transform: translateY(0);
+    }
+
+    50% {
+
+        transform: translateY(-25px);
+    }
+}
+
+#loading-text {
+
+    color: white;
+
+    margin-top: 25px;
+
+    font-size: 1.3rem;
+
+    font-weight: 500;
+}
+
+.reason-tags {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-top: 15px;
+}
+
+.reason-tag {
+
+    background: #E50914;
+
+    color: white;
+
+    padding: 8px 14px;
+
+    border-radius: 20px;
+
+    font-size: 0.85rem;
+
+    font-weight: 500;
+
+    transition: .3s;
+}
+
+.reason-tag:hover {
+
+    transform: scale(1.05);
+
+    background: #ff1f2d;
+}
+
+.reason-tags {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-top: 15px;
+}
+
+.reason-tag {
+
+    background: #E50914;
+
+    color: white;
+
+    padding: 8px 14px;
+
+    border-radius: 20px;
+
+    font-size: 0.85rem;
+
+    font-weight: 500;
+
+    transition: .3s;
+}
+
+.reason-tag:hover {
+
+    transform: scale(1.05);
+
+    background: #ff1f2d;
+}
+
+/* ==========================
+   FOOTER
+========================== */
+
+.footer {
+
+    background: #111;
+
+    margin-top: 80px;
+
+    padding: 40px 20px;
+
+    text-align: center;
+
+    color: #aaa;
+
+    border-top: 1px solid #222;
+}
+
+.footer-content {
+
+    max-width: 1200px;
+
+    margin: auto;
+}
+
+.footer-content h3 {
+
+    color: white;
+
+    margin-bottom: 10px;
+
+    font-size: 1.5rem;
+}
+
+.footer-content p {
+
+    margin: 10px 0;
+
+    line-height: 1.6;
+}
+
+.footer-links {
+
+    margin: 25px 0;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 25px;
+
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+
+    color: #bbb;
+
+    text-decoration: none;
+
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+
+    color: #E50914;
+}
+
+.footer hr {
+
+    border: none;
+
+    border-top: 1px solid #222;
+
+    margin: 20px auto;
+
+    width: 70%;
+}
+
+.copyright {
+
+    font-size: 0.9rem;
+
+    color: #777;
+}
+

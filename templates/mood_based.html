@@ -24,19 +24,22 @@
         😊 What Mood Are You In?
     </h1>
 
-    <form action="/watch-context"
-          method="POST">
+    <form
+            action="/watch-context"
+            method="POST">
 
         <div class="option-grid">
 
-            <button name="mood"
+            <button 
+                    name="mood"
                     value="happy">
 
                 😄 Happy
 
             </button>
 
-            <button name="mood"
+            <button 
+                    name="mood"
                     value="sad">
 
                 😢 Sad
@@ -76,6 +79,10 @@
     </form>
 
 </div>
+
+
+{% include 'footer.html' %}
+
 
 </body>
 

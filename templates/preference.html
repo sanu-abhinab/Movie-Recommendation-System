@@ -24,8 +24,10 @@
         🎬 Movie Preference
     </h1>
 
-    <form action="/mood-recommendations"
-          method="POST">
+    <form 
+            id="recommendForm"
+            action="/mood-recommendations"
+            method="POST">
 
         <input type="hidden"
                name="mood"
@@ -41,14 +43,22 @@
 
         <div class="option-grid">
 
-            <button name="preference"
+            <button 
+                    type="button"
+                    onclick="startRecommendation()"
+                    
+                    name="preference"
                     value="new">
 
                 ✨ New Gen Movies
 
             </button>
 
-            <button name="preference"
+            <button 
+                    type="button"
+                    onclick="startRecommendation()"
+            
+                    name="preference"
                     value="any">
 
                 🎥 Doesn't Matter
@@ -60,6 +70,89 @@
     </form>
 
 </div>
+
+</div>
+
+    <div id="loading-screen">
+
+    <div class="movie-loader">
+
+        <picture>
+
+            <source
+                srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f3ac/512.webp"
+                type="image/webp">
+
+            <img
+                src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f3ac/512.gif"
+                alt="🎬">
+
+        </picture>
+
+    </div>
+
+    <h2 id="loading-text">
+
+        Understanding your movie taste...
+
+    </h2>
+
+</div>
+
+{% include 'footer.html' %}
+
+<script>
+
+const messages = [
+
+    "Understanding your movie taste...",
+
+    "Exploring thousands of movie connections...",
+
+    "Matching genres, stories, and emotions...",
+
+    "Finding the best recommendations for you...",
+
+    "Preparing your personalized watchlist..."
+
+];
+
+let current = 0;
+
+function startRecommendation() {
+
+    document.getElementById(
+        "loading-screen"
+    ).style.display =
+    "flex";
+
+    const text =
+    document.getElementById(
+        "loading-text"
+    );
+
+    const interval =
+    setInterval(() => {
+
+        current =
+        (current + 1) %
+        messages.length;
+
+        text.innerText =
+        messages[current];
+
+    }, 1200);
+
+    setTimeout(() => {
+
+        document.getElementById(
+            "recommendForm"
+        ).submit();
+
+    }, 300);
+}
+
+</script>
 
 </body>
 

@@ -26,11 +26,11 @@
     <div class="recommendation-header">
 
         <h1>
-            Because You Watched
+            Here Are Our Recommendations
         </h1>
 
         <h2>
-            {{ selected_movie }}
+            Based On {{ selected_movie }}
         </h2>
 
     </div>
@@ -234,7 +234,8 @@
 
                         </h3>
 
-                        <p id="recommendationReason">
+                        <p id="recommendationReason"
+                            class="reason-tags">
 
                         </p>
 
@@ -261,6 +262,7 @@
 
     </div>
 
+    {% include 'footer.html' %}
 
     <!-- JAVASCRIPT -->
 
@@ -436,8 +438,28 @@
 
         if (reason) {
 
-            reason.innerText =
-            explanation;
+            reason.innerHTML = "";
+
+            const tags =
+                explanation.split("|");
+
+            tags.forEach(tag => {
+
+                const badge =
+                    document.createElement(
+                        "span"
+                    );
+
+                badge.className =
+                    "reason-tag";
+
+                badge.innerText =
+                    tag.trim();
+
+                reason.appendChild(
+                    badge
+                );
+            });
         }
 
         // --------------------------------
@@ -536,6 +558,18 @@
             modal.style.display = "none";
         }
     }
+
+
+    window.history.pushState(
+        null,
+        "",
+        window.location.href
+    );
+
+    window.onpopstate = function() {
+
+        window.location.href = "/";
+    };
 
     </script>
 
