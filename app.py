@@ -23,6 +23,7 @@ from src.tmdb_api import (
 )
 
 from src.recommendation import MovieRecommender
+from src.hybrid_recommendation import HybridRecommender
 
 app = Flask(__name__)
 
@@ -33,6 +34,12 @@ app.secret_key = "movie_discovery_ai_2026"
 # --------------------------------------------------
 
 recommender = MovieRecommender(
+    "data/processed/clean_movies.csv"
+)
+
+print(recommender.data.columns)
+
+hybrid_recommender = HybridRecommender(
     "data/processed/clean_movies.csv"
 )
 
@@ -165,11 +172,32 @@ def recommend():
 
     movie_name = request.form.get("movie")
 
-    recommendations = recommender.recommend(
-        movie_name
-    )[:8]
+    engine = session.get(
+        "engine",
+        "content"
+    )
     
-    recommendations = recommender.recommend(movie_name)
+    if engine == "hybrid":
+
+        print(
+            "Using Hybrid Engine"
+        )
+
+        recommendations = hybrid_recommender.recommend(
+            movie_name
+        )[:8]
+
+    else:
+
+        print(
+            "Using Content Engine"
+        )
+
+        recommendations = recommender.recommend(
+            movie_name
+        )[:8]
+        
+    recommendations = recommendations[:8]
 
     movie_data = []
 
