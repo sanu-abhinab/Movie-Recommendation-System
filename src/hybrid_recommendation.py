@@ -63,6 +63,28 @@ class HybridRecommender(MovieRecommender):
             movie = self.data.iloc[movie_index]
 
             score = similarity
+            
+            # ----------------------------------
+            # FRANCHISE BOOST
+            # ----------------------------------
+
+            target_title = movie_title.lower()
+
+            candidate_title = movie['title'].lower()
+
+            target_words = target_title.split()
+
+            candidate_words = candidate_title.split()
+
+            shared_title_words = len(
+                set(target_words[:2]).intersection(
+                    set(candidate_words[:2])
+                )
+            )
+
+            if shared_title_words >= 2:
+
+                score += 0.15
 
             # ----------------------------------
             # GENRE BOOST
